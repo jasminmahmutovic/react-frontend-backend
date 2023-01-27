@@ -1,26 +1,29 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+	Box,
+	Button,
+	Card,
+	CardMedia,
+	TextField,
+	Typography,
+} from "@mui/material";
 import React from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+import { connect, useDispatch } from "react-redux";
 import { searchMovies } from "../../store/api/searchMovies";
-import * as movieActions from "../../store/api/searchMovies";
+import * as types from "../../store/types";
 import "./home.css";
 
 const mapStateToProps = ({ movies }) => {
 	return { movies };
 };
 
-const mapDispatchToProps = (dispatch) => {
-	return bindActionCreators({ ...movieActions }, dispatch);
-};
+const Home = connect(mapStateToProps)(({ movies }) => {
+	const [searchValue, setSearchValue] = React.useState({});
+	const dispatch = useDispatch();
 
-const Home = connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(({ movies }) => {
-	const [searchValue, setSearchValue] = React.useState({
-		movieTitle: "",
-	});
+	const getMovies = async (value) => {
+		const data = await searchMovies(value);
+		dispatch({ type: types.SET_SEARCH_MOVE, payload: data.Search });
+	};
 
 	return (
 		<Box>
@@ -55,11 +58,12 @@ const Home = connect(
 					color="success"
 					variant="contained"
 					sx={{ fontWeight: "bold" }}
-					onClick={() => searchMovies(searchValue)}
+					onClick={() => getMovies(searchValue)}
 				>
 					Sök
 				</Button>
 			</div>
+			<div>{/* <img src={movies.movies[0].Poster} alt="movieposter" /> */}</div>
 		</Box>
 	);
 });
